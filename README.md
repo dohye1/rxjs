@@ -1,9 +1,8 @@
 # rxjs
 
-https://www.yalco.kr/@rxjs/1-1/
-rxjs를 공부해보자!
+[rxjs를 공부해보자!](https://www.yalco.kr/@rxjs/1-1/)
 
-# 0730
+# 스트림
 
 ## Observe 할 대상(=== Observable)을 생성하는 방법
 
@@ -120,3 +119,65 @@ subject.next(5);
 > - 개발자가 원하는 시점에 발행
 > - 모든 구독자에게 똑같이 발행
 > - multicast
+
+### 사용 예시
+
+- observable과 subject를 조합해서 사용할 수 있다.
+- 아래 코드에서 subject는 하나의 값이다.
+- 다른 시기에 구독을 시작한 observer들이 같은 값을 발행받도록 할때 Subject를 사용할 수 있다.
+
+```js
+const subject = new Subject();
+const obs$ = interval(1000);
+
+obs$.subscribe((x) => subject.next(x));
+
+subject.subscribe((x) => console.log("바로구독: " + x));
+setTimeout((_) => {
+  subject.subscribe((x) => console.log("3초 후 구독: " + x));
+}, 3000);
+setTimeout((_) => {
+  subject.subscribe((x) => console.log("5초 후 구독: " + x));
+}, 5000);
+setTimeout((_) => {
+  subject.subscribe((x) => console.log("10초 후 구독: " + x));
+}, 10000);
+```
+
+### 여러 Subject
+
+> BehaviorSubject
+
+- 초기값 설정 가능함
+  `new BehaviorSubject(0)`
+- 마지막 값을 저장 후 추가 구독자에게 발행함
+
+> ReplaySubject
+
+- 마지막 N개 값을 저장 후 추가 구독자에게 발행
+
+```js
+const { ReplaySubject } = rxjs;
+const subject = new ReplaySubject(3); // 마지막 3개 값 저장
+
+subject.subscribe((x) => console.log("A: " + x));
+
+subject.next(1);
+subject.next(2);
+subject.next(3);
+subject.next(4);
+subject.next(5);
+
+subject.subscribe((x) => console.log("B: " + x));
+
+subject.next(6);
+subject.next(7);
+```
+
+> AsyncSubject
+
+- complete후의 마지막 값만 발행
+- 구독이 언제 시작됐든, 마지막값만 발행한다.
+- `subject.complete()`를 호출할때만 구독된것들이 실행됨
+
+# Operator
