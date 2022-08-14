@@ -214,3 +214,74 @@ from([9, 3, 10, 5, 1, 10, 9, 9, 1, 4, 1, 8, 6, 2, 7, 2, 5, 5, 10, 2])
   )
   .subscribe((x) => console.log("발행물: " + x));
 ```
+
+## transformation 연산자들
+
+### map
+
+### pluck
+
+- 특정 객체의 특정 항목만 뽑아낼때 사용하기 편리함
+- 여러 depth의 값을 쉽게 뽑아낼수있어서 ajax 요청에도 유용하게 사용됨
+
+```js
+const { from } = rxjs;
+const { pluck } = rxjs.operators;
+
+const obs$ = from([
+  { name: "apple", price: 1200, info: { category: "fruit" } },
+  { name: "carrot", price: 800, info: { category: "vegetable" } },
+  { name: "pork", price: 5000, info: { category: "meet" } },
+  { name: "milk", price: 2400, info: { category: "drink" } },
+]);
+
+obs$.pipe(pluck("price")).subscribe(console.log);
+```
+
+- 아래처럼 배열의 index로도 접근 가능하다.
+
+```js
+pluck("response", "items", 0, "html_url");
+```
+
+### toArray
+
+- 연속되는 일련의 값들을 한 배열로 묶어서 보낸다
+- 아래 코드에 toArray로 처리해주지않으면 그냥 개별값으로 출력이됨
+
+```js
+const { range } = rxjs;
+const { toArray, filter } = rxjs.operators;
+
+range(1, 50)
+  .pipe(
+    filter((x) => x % 3 === 0),
+    filter((x) => x % 2 === 1),
+    toArray()
+  )
+  .subscribe(console.log);
+```
+
+### scan
+
+- reduce와 비교해보면
+  reduce는 결과만 발행하지만, scan은 과정을 모두 발행한다.
+
+### zip
+
+- `observable`을 만들어내는 operator이다. 그래서 `rxjs.operator`에서 import하지않고 `rxjs`자체에서 import함
+- zip연산자에 넘겨준 observable의 길이가 다른 경우, 길이가 가장 짧은 배열의 길이만큼 생성된다.
+
+```js
+const obs1$ = from([1, 2, 3, 4, 5]);
+const obs2$ = from(["a", "b", "c", "d", "e"]);
+
+zip(obs1$, obs2$).subscribe(console.log);
+```
+
+위 코드의 실행결과는
+`[1, "a"]`
+`[(2, "b")]`
+`[(3, "c")]`
+`[(4, "d")]`
+`[(5, "e")]`
