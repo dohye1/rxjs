@@ -181,3 +181,36 @@ subject.next(7);
 - `subject.complete()`를 호출할때만 구독된것들이 실행됨
 
 # Operator
+
+## 산수관련 연산자
+
+- count, max, min, reduce
+
+```js
+obs$.pipe(count()).subscribe((x) => console.log("count: " + x));
+```
+
+## 선택관련 연산자
+
+- first, last, elementAt, distinct, filter
+- distinct는 중복된 값을 제거하고 유일한 값만 반환해준다.
+
+## Tap operator
+
+- 통과되는 모든 값마다 특정 작업을 수행
+- 발행 결과에 영향을 주지 않음
+
+```js
+const { from } = rxjs;
+const { tap, filter, distinct } = rxjs.operators;
+
+from([9, 3, 10, 5, 1, 10, 9, 9, 1, 4, 1, 8, 6, 2, 7, 2, 5, 5, 10, 2])
+  .pipe(
+    tap((x) => console.log("-------------- 처음 탭: " + x)),
+    filter((x) => x % 2 === 0),
+    tap((x) => console.log("--------- 필터 후: " + x)),
+    distinct(),
+    tap((x) => console.log("중복 제거 후: " + x))
+  )
+  .subscribe((x) => console.log("발행물: " + x));
+```

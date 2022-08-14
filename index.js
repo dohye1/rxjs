@@ -1,17 +1,12 @@
-const { interval, Subject } = rxjs;
+const { from } = rxjs;
+const { tap, filter, max, elementAt, distinct, reduce } = rxjs.operators;
 
-const subject = new Subject();
-const obs$ = interval(1000);
-
-obs$.subscribe((x) => subject.next(x));
-
-subject.subscribe((x) => console.log("바로구독: " + x));
-setTimeout((_) => {
-  subject.subscribe((x) => console.log("3초 후 구독: " + x));
-}, 3000);
-setTimeout((_) => {
-  subject.subscribe((x) => console.log("5초 후 구독: " + x));
-}, 5000);
-setTimeout((_) => {
-  subject.subscribe((x) => console.log("10초 후 구독: " + x));
-}, 10000);
+from([9, 3, 10, 5, 1, 10, 9, 9, 1, 4, 1, 8, 6, 2, 7, 2, 5, 5, 10, 2])
+  .pipe(
+    distinct(),
+    filter((x) => x % 2 !== 0),
+    reduce((acc, cur) => {
+      return acc + cur;
+    }, 0)
+  )
+  .subscribe((x) => console.log("발행물: " + x));
