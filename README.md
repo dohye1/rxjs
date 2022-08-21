@@ -374,7 +374,7 @@ interval(1000)
 
 > ~할때까지 건너뛰기
 
-## 시간을 다루는 operator
+## 시간을 다루는 operator 1
 
 ### delay
 
@@ -435,3 +435,30 @@ ajax("http://127.0.0.1:3000/people/name/random")
 ```
 
 0.5초 내에 response를 받아오지못하면 of안의 값을 대신 내보냄
+
+## 시간을 다루는 operator 2
+
+debounceTime, auditTime, sampleTime, throttleTime
+
+### auditTime
+
+특정 이벤트가 발생한 뒤, 특정 시간이 지나면 무조건 마지막 이벤트의 값이 발행됨
+
+### sampleTime
+
+`sampleTime(1000)`
+
+- 특정한 시간마다 발행되는데, 발행하는 시점에서 가장 늦게 발생한 값이 출력됨
+
+### [throttleTime](https://rxjs-dev.firebaseapp.com/api/operators/throttleTime)
+
+sampleTime과 기본 동작은 비슷하지만 옵션을 설정할 수 있다.
+이건 자세한 설명을 보는게좋을것같으니 공식문서에서 보자!
+
+```ts
+throttleTime<T>(duration: number, scheduler: SchedulerLike = asyncScheduler, config: ThrottleConfig = defaultThrottleConfig): MonoTypeOperatorFunction<T>
+```
+
+### debounceTime, auditTime, sampleTime, throttleTime에서 time이 붙지않은 연산자들
+
+> 유동적으로 사용가능하다!
