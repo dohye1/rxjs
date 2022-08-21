@@ -373,3 +373,65 @@ interval(1000)
 ## skipUntil
 
 > ~할때까지 건너뛰기
+
+## 시간을 다루는 operator
+
+### delay
+
+> 주어진 시간만큼 지연 발행
+
+### timeInterval
+
+> 이전 발행물과의 시간차를 출력함
+
+### timeout
+
+> 주어진 시간 내 다음값 미발행시 오류
+> ajax요청을 보낸 뒤, 응답이 정해진 시간내에 오지않으면 오류로 간주하도록 할때 유용함
+
+### timeoutWith
+
+> 주어진 시간내에 다음값 미 발행시 다른 Observable 개시
+
+_예시 1_
+
+```js
+const { fromEvent, interval, of } = rxjs;
+const { ajax } = rxjs.ajax;
+const { timeoutWith, pluck, scan } = rxjs.operators;
+
+const obs$1 = fromEvent(document, "click");
+const obs$2 = interval(1000);
+
+obs$1
+  .pipe(
+    timeoutWith(3000, obs$2),
+    scan((acc, x) => {
+      return acc + 1;
+    }, 0)
+  )
+  .subscribe(console.log);
+```
+
+`obs$1`이 3초동안 실행되지않으면, `obs$1`가 멈추고 `obs$2`가 실행된다.
+
+_예시 2_
+
+```js
+ajax("http://127.0.0.1:3000/people/name/random")
+  .pipe(
+    pluck("response"),
+    timeoutWith(
+      500,
+      of({
+        id: 0,
+        first_name: "Hong",
+        last_name: "Gildong",
+        role: "substitute",
+      })
+    )
+  )
+  .subscribe(console.log, console.error);
+```
+
+0.5초 내에 response를 받아오지못하면 of안의 값을 대신 내보냄
